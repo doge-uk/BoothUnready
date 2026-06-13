@@ -80,21 +80,23 @@ jobs:
           name: deckcheck-windows
           path: artifacts
 
+      - name: Debug - List artifacts
+        run: ls -la artifacts/
+
       - name: Create Release
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@v1
         with:
           tag_name: ${{ steps.version.outputs.version }}
           name: Release ${{ steps.version.outputs.version }}
           body: |
             Automated release
 
-            Commit:
-            ${{ github.sha }}
+            Commit: ${{ github.sha }}
 
-            Message:
-            ${{ github.event.head_commit.message }}
+            Message: ${{ github.event.head_commit.message }}
           files: |
-            artifacts/**/*.exe
-            artifacts/**/*.exe.blockmap
+            artifacts/*.exe
+            artifacts/*.exe.blockmap
+          fail_on_unmatched_files: false
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

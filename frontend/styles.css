@@ -19,14 +19,13 @@
 }
 
 
-/* window btns
-/* Window controls */
+
 .window-controls {
   display: flex;
   gap: 8px;
-  align-items: center; /* This centers vertically */
-  height: 100%; /* Take full height of topbar */
-  -webkit-app-region: no-drag; /* Important: allows clicking through the draggable topbar */
+  align-items: center; 
+  height: 100%; 
+  -webkit-app-region: no-drag; 
 }
 
 .window-btn {

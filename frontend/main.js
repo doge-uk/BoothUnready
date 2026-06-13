@@ -17,7 +17,7 @@ function createWindow() {
   const win = new BrowserWindow({
     width: 1480,
     height: 920,
-    minWidth: 1190,
+    minWidth: 1200,
     minHeight: 760,
     backgroundColor: '#0b1020',
     title: 'DeckCheck',

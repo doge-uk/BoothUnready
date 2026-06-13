@@ -12,8 +12,8 @@
     "dist": "npm run build:backend && electron-builder --win --x64"
   },
   "devDependencies": {
-    "electron": "^30.0.0",
-    "electron-builder": "^24.13.3"
+    "electron": "^42.4.0",
+    "electron-builder": "^26.15.2"
   },
   "build": {
     "appId": "com.deckcheck.app",

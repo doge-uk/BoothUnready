@@ -130,21 +130,15 @@ pub fn scan_file(path: &Path, devices: &[Device]) -> ScanResult {
     let detected_format = get_audio_format(path, &codec_params);
     let codec_name = symphonia::default::get_codecs().get_codec(codec_params.codec).map(|d| d.long_name);
 
-    let wav_format_tag = if let Some(data) = &codec_params.extra_data {
+let wav_format_tag = if let Some(data) = &codec_params.extra_data {
     if data.len() >= 2 {
         let tag = u16::from_le_bytes([data[0], data[1]]);
-        println!("WAV format tag from extra_data offset 0-1: {}", tag);
-        
-        // Also print offset 2-3 for debugging
-        if data.len() >= 4 {
-            let actual = u16::from_le_bytes([data[2], data[3]]);
-            println!("WAV actual format tag from offset 2-3: {}", actual);
-        }
         Some(tag)
     } else {
         None
     }
 } else {
+
     None
 };
 
@@ -216,6 +210,7 @@ pub fn scan_file(path: &Path, devices: &[Device]) -> ScanResult {
             }
 
             // Known failures
+            // Known failures
             if format == AudioFormat::WAV {
                 if props.bit_depth == Some(32) {
                     compatible = false;
@@ -226,29 +221,16 @@ pub fn scan_file(path: &Path, devices: &[Device]) -> ScanResult {
                     failures.push("WAV: Sample rate above 96000 Hz not supported".to_string());
                 }
                 
-                // Check if it's WAV EXTENSIBLE (format tag 0xFFFE)
-                let is_extensible = props.wav_format_tag == Some(0xFFFE);
+                // Read raw WAV header to detect EXTENSIBLE
+                let raw_format_tag = read_wav_format_tag(path);
+
                 
-                if is_extensible {
-                    // WAV EXTENSIBLE is not supported on CDJ-2000NXS2
+                if raw_format_tag == Some(0xFFFE) {
                     compatible = false;
-                    failures.push(
-                        "WAV: WAV EXTENSIBLE header format (wFormatTag = 0xFFFE) not supported. "
-                        .to_string()
-                    );
-                    
-                    // Still check the actual format for informational purposes
-                    if let Some(data) = &props.extra_data {
-                        if data.len() >= 4 {
-                            let actual_tag = u16::from_le_bytes([data[2], data[3]]);
-                            if actual_tag == 1 {
-                                failures.push(
-                                    "Note: Audio is PCM but the WAV EXTENSIBLE container is not compatible"
-                                        .to_string()
-                                );
-                            }
-                        }
-                    }
+                    failures.push("WAV: WAV EXTENSIBLE header format (wFormatTag = 0xFFFE) not supported".to_string());
+                } else if props.wav_format_tag == Some(0xFFFE) {
+                    compatible = false;
+                    failures.push("WAV: WAV EXTENSIBLE header format (wFormatTag = 0xFFFE) not supported".to_string());
                 }
             }
             if format == AudioFormat::AIFF {
@@ -319,4 +301,46 @@ fn get_audio_format(path: &Path, params: &CodecParameters) -> Option<AudioFormat
         Some("flac") | Some("fla") => Some(AudioFormat::FLAC),
         _ => None,
     }
+}
+// Add this function to read raw WAV header
+fn read_wav_format_tag(path: &Path) -> Option<u16> {
+    use std::io::Read;
+    
+    let mut file = std::fs::File::open(path).ok()?;
+    let mut header = [0u8; 44]; // Read enough for WAV header
+    
+    if file.read_exact(&mut header).is_err() {
+        return None;
+    }
+    
+    // Check RIFF header
+    if &header[0..4] != b"RIFF" {
+        return None;
+    }
+    
+    // Check WAVE format
+    if &header[8..12] != b"WAVE" {
+        return None;
+    }
+    
+    // Find fmt chunk
+    let mut pos = 12;
+    while pos + 8 <= header.len() {
+        let chunk_id = &header[pos..pos+4];
+        let chunk_size = u32::from_le_bytes([header[pos+4], header[pos+5], header[pos+6], header[pos+7]]) as usize;
+        
+        if chunk_id == b"fmt " {
+            if pos + 8 + 2 <= header.len() {
+                let format_tag = u16::from_le_bytes([header[pos+8], header[pos+9]]);
+                return Some(format_tag);
+            }
+        }
+        
+        pos += 8 + chunk_size;
+        if pos >= header.len() {
+            break;
+        }
+    }
+    
+    None
 }

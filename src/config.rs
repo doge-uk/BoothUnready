@@ -347,7 +347,7 @@ pub fn get_devices() -> Vec<Device> {
                 (AudioFormat::MP3, FormatRules {
                     supported_bit_depths: [16].iter().cloned().collect(),
                     supported_sample_rates: [32000, 44100, 48000, 16000, 22050, 24000].iter().cloned().collect(),
-                    supported_bitrates: Some((8_000, 320_000)),
+                    supported_bitrates: Some((8_000, 400_000)),
                     cbr_only: false,
                     supported_encodings: ["MPEG-1 Audio Layer-3".to_string(), "MPEG-2 Audio Layer-3".to_string()].iter().cloned().collect(),
                 }),

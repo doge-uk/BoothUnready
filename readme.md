@@ -17,6 +17,14 @@
 - **Detailed Reports** - View per-device compatibility issues with specific failure reasons
 - **Modern Interface** - Clean, dark-themed UI with responsive design
 
+## Usage
+
+Launch DeckCheck and pick your scan method from the toolbar:
+
+- **Scan Folder** - Check a single folder of audio files. Quick and simple.
+
+- **Parse XML** - Load a rekordbox collection export. Ideal if your library spans multiple folders.
+    Export it first: rekordbox → File → Export Collection in XML format.
 ## Supported Devices
 
 - CDJ-3000X

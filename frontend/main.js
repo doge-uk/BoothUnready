@@ -122,6 +122,48 @@ function runBackendScan(folderPath, deviceName) {
   });
 }
 
+function runBackendScanXml(xmlPath, deviceName) {
+  return new Promise((resolve, reject) => {
+    const backend = resolveBackendCommand();
+    const args = backend.args.concat(['--xml', xmlPath]);
+    if (deviceName) {
+      args.push('--device', deviceName);
+    }
+
+    const child = spawn(backend.command, args, {
+      cwd: path.resolve(__dirname, '..'),
+      windowsHide: true,
+      shell: false
+    });
+
+    let stdout = '';
+    let stderr = '';
+
+    child.stdout.on('data', (chunk) => {
+      stdout += chunk.toString();
+    });
+
+    child.stderr.on('data', (chunk) => {
+      stderr += chunk.toString();
+    });
+
+    child.on('error', reject);
+    child.on('close', (code) => {
+      if (code !== 0) {
+        reject(new Error(stderr.trim() || `Backend exited with code ${code}`));
+        return;
+      }
+
+      try {
+        resolve(JSON.parse(stdout));
+      } catch (error) {
+        reject(new Error(`Failed to parse backend JSON: ${error.message}\n${stdout}\n${stderr}`));
+      }
+    });
+  });
+}
+
+
 ipcMain.handle('select-folder', async () => {
   const result = await dialog.showOpenDialog({
     properties: ['openDirectory', 'createDirectory']
@@ -139,6 +181,24 @@ ipcMain.handle('get-devices', async () => DEVICE_NAMES);
 ipcMain.handle('run-scan', async (_event, folderPath, deviceName) => {
   return runBackendScan(folderPath, deviceName || null);
 });
+
+ipcMain.handle('select-xml', async () => {
+  const result = await dialog.showOpenDialog({
+    properties: ['openFile'],
+    filters: [{ name: 'rekordbox XML', extensions: ['xml'] }]
+  });
+
+  if (result.canceled || result.filePaths.length === 0) {
+    return null;
+  }
+
+  return result.filePaths[0];
+});
+
+ipcMain.handle('run-xml-scan', async (_event, xmlPath, deviceName) => {
+  return runBackendScanXml(xmlPath, deviceName || null);
+});
+
 
 app.whenReady().then(() => {
   createWindow();

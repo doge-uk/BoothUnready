@@ -9,22 +9,37 @@
   <body>
     <main class="shell">
       <header class="topbar panel">
-
         <div class="brand-block">
           <div>
             <h1>DeckCheck</h1>
           </div>
-            <div class="path-header">
-                <input id="folderPath" type="text" placeholder="Path to search here" readonly class="path-input" />
-                <button id="chooseFolder" class="choose-folder">Browse</button>
-            </div>  
         </div>
+        
+        <!-- Add menu bar -->
+        <div class="menu-bar">
+          <button id="scanFolderBtn" class="menu-btn">Scan Folder</button>
+          <button id="parseXmlBtn" class="menu-btn">Parse XML</button>
+        </div>
+        
+        <!-- Window controls -->
         <div class="window-controls">
-            <button id="minimizeBtn" class="window-btn minimize" aria-label="Minimize">─</button>
-            <button id="closeBtn" class="window-btn close" aria-label="Close">✕</button>
+          <button id="minimizeBtn" class="window-btn minimize">─</button>
+          <button id="closeBtn" class="window-btn close">✕</button>
         </div>
-    </header>
-</header>
+      </header>
+
+      <!-- Folder selection modal - MOVED OUTSIDE HEADER -->
+      <div id="folderModal" class="modal" style="display: none;">
+        <div class="modal-content">
+          <h3>Select Audio Folder</h3>
+          <input id="modalFolderPath" type="text" placeholder="Path to audio folder" readonly class="path-input" />
+          <button id="modalChooseFolder" class="choose-folder">Browse</button>
+          <div class="modal-buttons">
+            <button id="confirmFolderBtn" class="primary">Scan</button>
+            <button id="cancelFolderBtn" class="secondary">Cancel</button>
+          </div>
+        </div>
+      </div>
 
       <section class="workspace-grid">
         <aside class="side-panel panel">
@@ -38,7 +53,7 @@
 
             <div class="filter-buttons">
               <button id="filterPass" class="filter-btn" data-filter="pass">Pass</button>
-              <button id="filterFail" class="filter-Fail" data-filter="fail">Fail</button>
+              <button id="filterFail" class="filter-btn" data-filter="fail">Fail</button>
             </div>
 
             <button id="runScan" class="primary primary-block scan-button">

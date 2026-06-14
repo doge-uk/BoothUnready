@@ -849,3 +849,61 @@ button:active {
 .device-checkbox input[type="checkbox"] {
   display: none;
 }
+
+/* Menu Bar */
+.menu-bar {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  -webkit-app-region: no-drag;
+}
+
+.menu-btn {
+  padding: 8px 16px;
+  background: var(--panel);
+  border: 1px solid rgba(148, 163, 184, 0.2);
+  border-radius: 8px;
+  color: var(--text);
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: all 140ms ease;
+}
+
+.menu-btn:hover {
+  background: var(--panel);
+  border-color: var(--accent);
+}
+
+/* Modal */
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background: var(--panel);
+  border: 1px solid var(--panel-border);
+  border-radius: 16px;
+  padding: 24px;
+  min-width: 400px;
+  backdrop-filter: blur(20px);
+}
+
+.modal-content h3 {
+  margin: 0 0 16px 0;
+}
+
+.modal-buttons {
+  display: flex;
+  gap: 10px;
+  margin-top: 20px;
+  justify-content: flex-end;
+}
